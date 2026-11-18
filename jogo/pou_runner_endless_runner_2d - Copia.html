@@ -1,0 +1,3177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pou Runner - Portal Oficial do Jogo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================================
+           RESET E ESTILOS GLOBAIS DO PORTAL
+           ============================================================================ */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(180deg, #38bdf8 0%, #7dd3fc 35%, #fef3c7 100%);
+            color: #4a2c11;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* ============================================================================
+           BARRA DE NAVEGAÇÃO SUPERIOR (ESTILO PORTAL INDIE)
+           ============================================================================ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 251, 235, 0.94);
+            backdrop-filter: blur(8px);
+            border-bottom: 4px solid #8B5A2B;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+            padding: 10px 20px;
+        }
+
+        .nav-container {
+            max-width: 1040px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-brand-icon {
+            width: 38px;
+            height: 38px;
+            background: #9E6630;
+            border: 3px solid #4A2C11;
+            border-radius: 50% 50% 42% 42%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 0 #4A2C11;
+        }
+
+        .nav-brand-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #b45309;
+            text-shadow: 0 2px 0 #fde047;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            background: #ffffff;
+            border: 2.5px solid #8B5A2B;
+            color: #5c3a1b;
+            font-weight: 700;
+            font-size: 0.92rem;
+            padding: 6px 14px;
+            border-radius: 50px;
+            box-shadow: 0 3px 0 #8B5A2B;
+            transition: transform 0.1s, background 0.15s;
+        }
+
+        .nav-link:hover {
+            background: #fef08a;
+            transform: translateY(-1px);
+        }
+
+        .nav-link:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #8B5A2B;
+        }
+
+        .nav-wallet {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #fef9c3;
+            border: 3px solid #d97706;
+            border-radius: 50px;
+            padding: 5px 14px;
+            font-weight: 700;
+            color: #92400e;
+            box-shadow: 0 3px 0 #d97706;
+        }
+
+        /* ============================================================================
+           CONTAINER PRINCIPAL DO PORTAL
+           ============================================================================ */
+        .portal-wrapper {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 20px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+
+        /* ============================================================================
+           SEÇÃO 1: PALCO DO JOGO (CANVAS INTERATIVO)
+           ============================================================================ */
+        #secao-jogar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scroll-margin-top: 80px;
+        }
+
+        #game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 960px;
+            aspect-ratio: 16 / 9;
+            max-height: 76vh;
+            background: #87CEEB;
+            border-radius: 26px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28), 0 0 0 6px #ffffff, 0 0 0 11px #8B5A2B;
+            overflow: hidden;
+        }
+
+        @media (max-width: 640px) {
+            #game-wrapper {
+                aspect-ratio: 4 / 3;
+                max-height: 70vh;
+                border-radius: 18px;
+                box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28), 0 0 0 4px #ffffff, 0 0 0 8px #8B5A2B;
+            }
+        }
+
+        canvas#gameCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        /* HUD Superior dentro do Canvas */
+        #hud {
+            position: absolute;
+            top: 14px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .hud-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.94);
+            border: 3px solid #7c4a21;
+            border-radius: 50px;
+            padding: 5px 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 700;
+            font-size: clamp(0.82rem, 1.8vw, 1.05rem);
+            color: #4a2c11;
+            box-shadow: 0 4px 0 #7c4a21;
+        }
+
+        .badge-coin {
+            color: #b45309;
+            border-color: #d97706;
+            box-shadow: 0 4px 0 #d97706;
+        }
+
+        .badge-record {
+            color: #15803d;
+            border-color: #16a34a;
+            box-shadow: 0 4px 0 #16a34a;
+        }
+
+        .badge-powerup {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-color: #0284c7;
+            box-shadow: 0 4px 0 #0284c7;
+            animation: pulse 1.4s infinite;
+        }
+
+        #btn-sound {
+            pointer-events: auto;
+            background: #fef08a;
+            border: 3px solid #ca8a04;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #ca8a04;
+            transition: transform 0.1s ease;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        #btn-sound:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #ca8a04;
+        }
+
+        /* Overlays do Canvas */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(25, 45, 70, 0.55);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            text-align: center;
+            z-index: 20;
+            transition: opacity 0.25s ease;
+        }
+
+        #start-screen {
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.06) 0%, rgba(15, 23, 42, 0.25) 100%);
+            backdrop-filter: none;
+            justify-content: space-between;
+            padding: 54px 18px 20px;
+            pointer-events: none;
+        }
+
+        .home-interactive {
+            pointer-events: auto;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .card {
+            background: #fffbeb;
+            border: 5px solid #8B5A2B;
+            border-radius: 28px;
+            padding: 20px 26px;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 12px 0 #5c3a1b, 0 20px 40px rgba(0, 0, 0, 0.4);
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.82); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .pou-logo {
+            font-size: clamp(2.2rem, 5.2vw, 3.5rem);
+            font-weight: 700;
+            color: #facc15;
+            background: linear-gradient(180deg, #fef08a 0%, #eab308 55%, #b45309 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 4px 0px #4a2c11) drop-shadow(0px 8px 14px rgba(0,0,0,0.35));
+            letter-spacing: 1.5px;
+            line-height: 1.05;
+            margin-bottom: 2px;
+        }
+
+        .pou-logo-solid {
+            font-size: clamp(1.9rem, 4.2vw, 2.4rem);
+            font-weight: 700;
+            color: #dc2626;
+            text-shadow: -2px -2px 0 #4a2c11, 2px -2px 0 #4a2c11, -2px 2px 0 #4a2c11, 2px 2px 0 #4a2c11, 0px 4px 0 #4a2c11;
+            margin-bottom: 4px;
+        }
+
+        .pou-subtitle {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.94);
+            border: 2.5px solid #7c4a21;
+            border-radius: 20px;
+            padding: 3px 14px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #15803d;
+            text-transform: uppercase;
+            letter-spacing: 1.3px;
+            box-shadow: 0 3px 0 #7c4a21;
+        }
+
+        #pou-pet-zone {
+            width: 145px;
+            height: 145px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .pet-hint {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #8B5A2B;
+            color: #5c3a18;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+            transform: translateY(10px);
+            animation: floatHint 2s infinite ease-in-out;
+        }
+
+        @keyframes floatHint {
+            0%, 100% { transform: translateY(10px); }
+            50% { transform: translateY(4px); }
+        }
+
+        .home-bottom-dock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 520px;
+        }
+
+        .wardrobe-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 251, 235, 0.95);
+            border: 3.5px solid #7c4a21;
+            border-radius: 50px;
+            padding: 4px 10px;
+            width: 100%;
+            max-width: 310px;
+            box-shadow: 0 5px 0 #5c3a1b, 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-arrow {
+            background: #fde047;
+            border: 2.5px solid #854d0e;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #713f12;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 0 #854d0e;
+        }
+
+        .btn-arrow:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #854d0e;
+        }
+
+        .wardrobe-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+
+        .wardrobe-tag {
+            font-size: 0.62rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #9a3412;
+            letter-spacing: 0.8px;
+        }
+
+        .wardrobe-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #4a2c11;
+        }
+
+        .home-actions-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        /* Botões Principais */
+        .btn-play {
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+            color: #ffffff;
+            font-family: 'Fredoka', sans-serif;
+            font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+            font-weight: 700;
+            border: 4px solid #14532d;
+            border-radius: 50px;
+            padding: 11px 28px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #14532d, 0 10px 20px rgba(22, 163, 74, 0.4);
+            transition: transform 0.1s ease, filter 0.15s ease;
+            text-shadow: 0 2px 0 #14532d;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-play-pulse {
+            animation: btnPulse 2s infinite ease-in-out;
+        }
+
+        @keyframes btnPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .btn-play:hover { filter: brightness(1.06); }
+        .btn-play:active {
+            transform: translateY(4px) scale(0.98);
+            box-shadow: 0 2px 0 #14532d;
+            animation: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            color: #ffffff;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.96rem;
+            font-weight: 700;
+            border: 4px solid #0c4a6e;
+            border-radius: 50px;
+            padding: 11px 18px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #0c4a6e;
+            text-shadow: 0 2px 0 #0c4a6e;
+            transition: transform 0.1s ease, filter 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-secondary:hover { filter: brightness(1.07); }
+        .btn-secondary:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0c4a6e;
+        }
+
+        .btn-shop-shortcut {
+            background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%);
+            border-color: #78350f;
+            box-shadow: 0 6px 0 #78350f;
+            text-shadow: 0 2px 0 #78350f;
+        }
+
+        /* Modal Como Jogar & Game Over */
+        .howto-list {
+            text-align: left;
+            background: #fef3c7;
+            border: 2.5px dashed #d97706;
+            border-radius: 18px;
+            padding: 12px 16px;
+            margin: 12px 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #78350f;
+        }
+
+        .howto-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .howto-icon {
+            font-size: 1.25rem;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 12px 0 16px;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border: 3px solid #d6d3d1;
+            border-radius: 16px;
+            padding: 8px 10px;
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            color: #78716c;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #44403c;
+        }
+
+        .gameover-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .new-record-tag {
+            display: inline-block;
+            background: #facc15;
+            color: #713f12;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            border: 2px solid #a16207;
+            margin-bottom: 6px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        /* Controles Touch Externos */
+        #mobile-controls {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 14px;
+            width: 100%;
+            max-width: 960px;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            max-width: 210px;
+            background: rgba(255, 255, 255, 0.94);
+            border: 4px solid #7c4a21;
+            border-radius: 20px;
+            padding: 12px 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #4a2c11;
+            box-shadow: 0 5px 0 #7c4a21;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .ctrl-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #7c4a21;
+            background: #fef3c7;
+        }
+
+        /* ============================================================================
+           ESTILOS DAS SEÇÕES DO PORTAL (LOJA, MÍDIA & SOBRE)
+           ============================================================================ */
+        .portal-section {
+            background: #fffbeb;
+            border: 5px solid #8B5A2B;
+            border-radius: 30px;
+            padding: 26px 24px;
+            box-shadow: 0 10px 0 #5c3a1b, 0 18px 35px rgba(0, 0, 0, 0.14);
+            scroll-margin-top: 84px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 3px dashed #e7c697;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 3.2vw, 2.05rem);
+            font-weight: 700;
+            color: #7c2d12;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-desc {
+            font-size: 0.98rem;
+            color: #78350f;
+            font-weight: 500;
+        }
+
+        /* Abas da Loja */
+        .shop-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .shop-tab {
+            background: #fef3c7;
+            border: 3px solid #b45309;
+            border-radius: 50px;
+            padding: 8px 18px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #78350f;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b45309;
+            transition: transform 0.1s, background 0.15s;
+        }
+
+        .shop-tab.active {
+            background: #facc15;
+            color: #451a03;
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #b45309;
+        }
+
+        /* Grade de Itens da Loja */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            gap: 16px;
+        }
+
+        .shop-item-card {
+            background: #ffffff;
+            border: 3.5px solid #d6d3d1;
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+            box-shadow: 0 6px 0 #d6d3d1;
+            transition: transform 0.15s, border-color 0.15s;
+            position: relative;
+        }
+
+        .shop-item-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .shop-item-card.equipped {
+            border-color: #16a34a;
+            background: #f0fdf4;
+            box-shadow: 0 6px 0 #16a34a;
+        }
+
+        .shop-item-card.owned:not(.equipped) {
+            border-color: #0284c7;
+            box-shadow: 0 6px 0 #0284c7;
+        }
+
+        .item-preview-circle {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            background: #fef9c3;
+            border: 3px solid #eab308;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.3rem;
+            margin-bottom: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .item-title {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: #44403c;
+        }
+
+        .item-sub {
+            font-size: 0.82rem;
+            color: #78716c;
+            line-height: 1.3;
+            min-height: 34px;
+        }
+
+        .btn-shop-action {
+            width: 100%;
+            margin-top: auto;
+            padding: 9px 14px;
+            border-radius: 50px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 3px solid;
+            transition: transform 0.08s, filter 0.15s;
+        }
+
+        .btn-shop-action:active {
+            transform: translateY(2px);
+        }
+
+        .btn-buy {
+            background: #facc15;
+            border-color: #a16207;
+            color: #422006;
+            box-shadow: 0 4px 0 #a16207;
+        }
+
+        .btn-equip {
+            background: #38bdf8;
+            border-color: #0369a1;
+            color: #ffffff;
+            box-shadow: 0 4px 0 #0369a1;
+        }
+
+        .btn-equipped {
+            background: #22c55e;
+            border-color: #15803d;
+            color: #ffffff;
+            box-shadow: 0 4px 0 #15803d;
+            cursor: default;
+        }
+
+        .btn-powerup-active {
+            background: #a855f7;
+            border-color: #6b21a8;
+            color: #ffffff;
+            box-shadow: 0 4px 0 #6b21a8;
+            cursor: default;
+        }
+
+        /* ============================================================================
+           SEÇÃO 3: MÍDIA & GALERIA INTERATIVA
+           ============================================================================ */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .gallery-card {
+            background: #ffffff;
+            border: 3.5px solid #8B5A2B;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #8B5A2B;
+            transition: transform 0.15s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        .gallery-thumb {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            display: block;
+            background: #bae6fd;
+        }
+
+        .gallery-caption {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .gallery-tag {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #d97706;
+            letter-spacing: 0.8px;
+        }
+
+        .gallery-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #4a2c11;
+        }
+
+        /* Soundboard na Galeria */
+        .soundboard-box {
+            background: #fef3c7;
+            border: 3px solid #d97706;
+            border-radius: 22px;
+            padding: 18px;
+        }
+
+        .soundboard-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sound-buttons-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-sfx {
+            background: #ffffff;
+            border: 3px solid #b45309;
+            border-radius: 16px;
+            padding: 10px 16px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #78350f;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #b45309;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.08s, background 0.12s;
+        }
+
+        .btn-sfx:hover {
+            background: #fef08a;
+        }
+
+        .btn-sfx:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #b45309;
+        }
+
+        /* ============================================================================
+           SEÇÃO 4: SOBRE O JOGO & DETALHES TÉCNICOS
+           ============================================================================ */
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+
+        .info-panel {
+            background: #ffffff;
+            border: 3px solid #e7c697;
+            border-radius: 20px;
+            padding: 18px;
+        }
+
+        .info-panel h3 {
+            font-size: 1.18rem;
+            color: #9a3412;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-panel p {
+            font-size: 0.94rem;
+            color: #57534e;
+            line-height: 1.55;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 3px solid #d6d3d1;
+            font-size: 0.92rem;
+        }
+
+        .specs-table th, .specs-table td {
+            padding: 11px 15px;
+            text-align: left;
+            border-bottom: 2px solid #f5f5f4;
+        }
+
+        .specs-table th {
+            background: #fef3c7;
+            color: #78350f;
+            font-weight: 700;
+        }
+
+        .specs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ============================================================================
+           MODAL LIGHTBOX DA GALERIA & NOTIFICAÇÃO TOAST
+           ============================================================================ */
+        #lightbox-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(6px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .lightbox-card {
+            background: #fffbeb;
+            border: 5px solid #8B5A2B;
+            border-radius: 26px;
+            max-width: 660px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: popIn 0.25s ease;
+        }
+
+        .lightbox-canvas {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            display: block;
+            background: #38bdf8;
+        }
+
+        .lightbox-body {
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .lightbox-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        #toast-msg {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1e293b;
+            color: #ffffff;
+            border: 3px solid #facc15;
+            padding: 10px 22px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+            z-index: 300;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            text-align: center;
+        }
+
+        #toast-msg.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .portal-footer {
+            text-align: center;
+            color: #78350f;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Barra de Navegação do Portal -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#secao-jogar" class="nav-brand">
+                <div class="nav-brand-icon">🥔</div>
+                <span class="nav-brand-title">POU RUNNER</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="#secao-jogar" class="nav-link">🎮 Jogar</a>
+                <a href="#secao-loja" class="nav-link">🛍️ Loja</a>
+                <a href="#secao-galeria" class="nav-link">🖼️ Mídia & Galeria</a>
+                <a href="#secao-sobre" class="nav-link">📖 Sobre o Jogo</a>
+            </div>
+
+            <div class="nav-wallet" title="Seu Saldo de Moedas Pou">
+                <span>🪙</span>
+                <span id="nav-coins">250</span>
+            </div>
+        </div>
+    </nav>
+
+    <main class="portal-wrapper">
+
+        <!-- ======================================================================
+             SEÇÃO 1: PALCO DO JOGO (CANVAS 2D INTERATIVO)
+             ====================================================================== -->
+        <section id="secao-jogar">
+            <div id="game-wrapper">
+                <canvas id="gameCanvas"></canvas>
+
+                <!-- HUD Superior -->
+                <div id="hud">
+                    <div class="hud-group">
+                        <div id="badge-score" class="badge hidden" title="Pontuação Atual">
+                            <span>⭐</span>
+                            <span id="hud-score">0</span>
+                        </div>
+                        <div class="badge badge-coin" title="Total de Moedas Acumuladas">
+                            <span>🪙</span>
+                            <span id="hud-coins">250</span>
+                        </div>
+                        <div class="badge badge-record" title="Seu Recorde">
+                            <span>🏆</span>
+                            <span id="hud-high">0</span>
+                        </div>
+                        <div id="badge-shield" class="badge badge-powerup hidden" title="Escudo de Sabão Ativo">
+                            <span>🫧 Escudo</span>
+                        </div>
+                        <div id="badge-magnet" class="badge badge-powerup hidden" title="Ímã de Comida Ativo">
+                            <span>🧲 Ímã</span>
+                        </div>
+                    </div>
+                    <button id="btn-sound" aria-label="Alternar Som" title="Ativar/Desativar Som">🔊</button>
+                </div>
+
+                <!-- Página Inicial Interativa sobre o Canvas -->
+                <div id="start-screen" class="overlay">
+                    <div class="home-interactive">
+                        <div class="pou-logo">POU RUNNER</div>
+                        <div class="pou-subtitle" id="theme-subtitle">Aventura no Quintal</div>
+                    </div>
+
+                    <!-- Zona Clicável do Pou -->
+                    <div id="pou-pet-zone" class="home-interactive" title="Clique no Pou para fazê-lo pular!">
+                        <span class="pet-hint">👆 Toque no Pou!</span>
+                    </div>
+
+                    <!-- Controles Inferiores da Home -->
+                    <div class="home-bottom-dock home-interactive">
+                        <div class="wardrobe-bar">
+                            <button id="btn-hat-prev" class="btn-arrow" aria-label="Acessório Anterior">◀</button>
+                            <div class="wardrobe-info">
+                                <span class="wardrobe-tag">Acessório Equipado</span>
+                                <span id="hat-name" class="wardrobe-name">😊 Clássico</span>
+                            </div>
+                            <button id="btn-hat-next" class="btn-arrow" aria-label="Próximo Acessório">▶</button>
+                        </div>
+
+                        <div class="home-actions-row">
+                            <button id="btn-start" class="btn-play btn-play-pulse">▶ JOGAR</button>
+                            <a href="#secao-loja" class="btn-secondary btn-shop-shortcut" style="text-decoration:none;">🛍️ Loja</a>
+                            <button id="btn-howto" class="btn-secondary">❓ Ajuda</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal "Como Jogar" -->
+                <div id="howto-screen" class="overlay hidden" style="z-index: 30;">
+                    <div class="card">
+                        <div class="pou-logo" style="font-size: 2rem;">COMO JOGAR</div>
+                        <div class="howto-list">
+                            <div class="howto-item">
+                                <span class="howto-icon">⬆️</span>
+                                <div><strong>Pular (até 2x no ar):</strong> Tecla <b>ESPAÇO</b>, <b>Seta ↑</b> ou <b>Toque na tela</b>.</div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon">⬇️</span>
+                                <div><strong>Abaixar / Descer rápido:</strong> Tecla <b>Seta ↓</b>, <b>S</b> ou <b>deslize para baixo</b>.</div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon">🍔</span>
+                                <div><strong>Guloseimas & Moedas:</strong> Moedas dão <b>+15 pts</b> e comidas (maçã, cupcake, hambúrguer) dão <b>+50 pts</b>!</div>
+                            </div>
+                            <div class="howto-item">
+                                <span class="howto-icon">🛍️</span>
+                                <div><strong>Loja do Pou:</strong> Use suas moedas na <b>Loja</b> abaixo para liberar skins, cenários e power-ups!</div>
+                            </div>
+                        </div>
+                        <button id="btn-close-howto" class="btn-play" style="padding: 10px 28px; font-size: 1.15rem;">ENTENDI!</button>
+                    </div>
+                </div>
+
+                <!-- Tela de Game Over -->
+                <div id="gameover-screen" class="overlay hidden">
+                    <div class="card">
+                        <div id="new-record-badge" class="new-record-tag hidden">🎉 NOVO RECORDE! 🎉</div>
+                        <div class="pou-logo-solid">OH NÃO!</div>
+                        <div class="pou-subtitle" style="color: #78350f; margin-bottom: 8px;">O Pou se sujou no caminho!</div>
+
+                        <div style="margin: 4px auto 8px; width: 70px; height: 70px;">
+                            <svg viewBox="0 0 100 100" width="70" height="70">
+                                <path d="M50 10 C75 10, 92 48, 90 74 C88 90, 72 94, 50 94 C28 94, 12 90, 10 74 C8 48, 25 10, 50 10 Z" fill="#925E2E" stroke="#4A2C11" stroke-width="4"/>
+                                <circle cx="28" cy="76" r="8" fill="#4A2C11" opacity="0.75"/>
+                                <circle cx="72" cy="70" r="10" fill="#4A2C11" opacity="0.75"/>
+                                <circle cx="38" cy="46" r="11" fill="#FFFFFF" stroke="#3E240E" stroke-width="2.5"/>
+                                <circle cx="62" cy="46" r="11" fill="#FFFFFF" stroke="#3E240E" stroke-width="2.5"/>
+                                <circle cx="38" cy="48" r="4.5" fill="#1E1B18"/>
+                                <circle cx="62" cy="48" r="4.5" fill="#1E1B18"/>
+                                <path d="M27 35 L44 31" stroke="#3E240E" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M73 35 L56 31" stroke="#3E240E" stroke-width="3" stroke-linecap="round"/>
+                                <path d="M25 54 Q21 62 25 65 Q29 62 25 54 Z" fill="#38BDF8"/>
+                                <path d="M37 72 Q50 61 63 72" fill="none" stroke="#3E240E" stroke-width="3.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-label">Pontuação</div>
+                                <div class="stat-value" id="final-score">0</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-label">Recorde</div>
+                                <div class="stat-value" id="final-high" style="color: #16a34a;">0</div>
+                            </div>
+                        </div>
+
+                        <div class="gameover-buttons">
+                            <button id="btn-home" class="btn-secondary" style="padding: 11px 16px;">🏠 Início</button>
+                            <button id="btn-restart" class="btn-play" style="padding: 11px 18px; font-size: 1.15rem;">🔄 Jogar de Novo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões de Controle Rápido Mobile -->
+            <div id="mobile-controls" class="hidden">
+                <button id="btn-ctrl-jump" class="ctrl-btn">⬆️ PULAR</button>
+                <button id="btn-ctrl-duck" class="ctrl-btn">⬇️ ABAIXAR</button>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             SEÇÃO 2: LOJA FICTÍCIA INTERATIVA ('LOJA DO POU')
+             ====================================================================== -->
+        <section id="secao-loja" class="portal-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🛍️ Loja Oficial do Pou</h2>
+                    <p class="section-desc">Gaste suas moedas coletadas para personalizar o Pou, mudar o cenário e ativar power-ups!</p>
+                </div>
+                <div class="badge badge-coin" style="font-size: 1.1rem;">
+                    <span>Saldo: 🪙</span>
+                    <span id="shop-coins">250</span>
+                </div>
+            </div>
+
+            <!-- Abas de Categorias da Loja -->
+            <div class="shop-tabs" id="shop-tabs">
+                <button class="shop-tab active" data-cat="HATS">🎩 Acessórios</button>
+                <button class="shop-tab" data-cat="SKINS">🎨 Cores & Skins</button>
+                <button class="shop-tab" data-cat="THEMES">🌅 Cenários</button>
+                <button class="shop-tab" data-cat="POWERUPS">⚡ Power-ups</button>
+            </div>
+
+            <!-- Grade Dinâmica de Produtos -->
+            <div class="shop-grid" id="shop-grid"></div>
+        </section>
+
+        <!-- ======================================================================
+             SEÇÃO 3: MÍDIA & GALERIA INTERATIVA
+             ====================================================================== -->
+        <section id="secao-galeria" class="portal-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🖼️ Mídia & Galeria Conceitual</h2>
+                    <p class="section-desc">Clique nas artes oficiais para ampliar ou teste os efeitos sonoros sintetizados do jogo!</p>
+                </div>
+            </div>
+
+            <!-- Grade de Artes Conceituais Renderizadas via Canvas Procedural -->
+            <div class="gallery-grid" id="gallery-grid"></div>
+
+            <!-- Soundboard Interativo -->
+            <div class="soundboard-box">
+                <div class="soundboard-title">🎵 Estúdio de Áudio Procedural (Web Audio API)</div>
+                <div class="sound-buttons-row">
+                    <button class="btn-sfx" data-sfx="jump">⬆️ Pulo Fofo</button>
+                    <button class="btn-sfx" data-sfx="double">🌀 Pulo Duplo</button>
+                    <button class="btn-sfx" data-sfx="coin">🪙 Moeda Pou</button>
+                    <button class="btn-sfx" data-sfx="eat">🍔 Nhac! (Comida)</button>
+                    <button class="btn-sfx" data-sfx="buy">🛍️ Compra na Loja</button>
+                    <button class="btn-sfx" data-sfx="shield">🫧 Escudo Estourado</button>
+                    <button class="btn-sfx" data-sfx="hit">💥 Colisão / Lama</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             SEÇÃO 4: SOBRE O JOGO & DETALHES TÉCNICOS
+             ====================================================================== -->
+        <section id="secao-sobre" class="portal-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">📖 Sobre o Jogo & Detalhes Técnicos</h2>
+                    <p class="section-desc">Conheça a história, mecânicas de gameplay e arquitetura por trás do Pou Runner.</p>
+                </div>
+            </div>
+
+            <div class="about-grid">
+                <div class="info-panel">
+                    <h3>🌱 A História</h3>
+                    <p>
+                        Depois de comer muitos cupcakes no quarto, o <strong>Pou</strong> decidiu sair para uma corrida energética pelo quintal! O desafio é correr o mais longe possível, devorando lanches deliciosos e coletando moedas douradas enquanto desvia de cactos espinhosos, poças de lama e abelhas zangadas.
+                    </p>
+                </div>
+
+                <div class="info-panel">
+                    <h3>🕹️ Mecânicas & Física</h3>
+                    <p>
+                        O jogo conta com sistema de <strong>Pulo Duplo</strong> com giro acrobático no ar, mergulho rápido ao abaixar e animação procedural de <em>Squash & Stretch</em> (achatamento e estiramento) que dá vida e elasticidade a cada movimento do personagem.
+                    </p>
+                </div>
+
+                <div class="info-panel">
+                    <h3>⚡ Power-ups Estratégicos</h3>
+                    <p>
+                        Na <strong>Loja do Pou</strong>, você pode equipar o <strong>Escudo de Sabão</strong> (absorve um impacto sem encerrar a corrida) e o <strong>Ímã de Comida</strong> (atrai automaticamente todas as moedas e guloseimas próximas durante a partida).
+                    </p>
+                </div>
+            </div>
+
+            <table class="specs-table">
+                <thead>
+                    <tr>
+                        <th>Recurso / Elemento</th>
+                        <th>Especificação Detalhada</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Motor Gráfico</strong></td>
+                        <td>HTML5 Canvas 2D nativo com renderização vetorial procedural a 60 FPS e suporte HiDPI (Retina).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sistema de Áudio</strong></td>
+                        <td>Sintetizador em tempo real via <em>Web Audio API</em> (osciladores senoidais, triangulares e dente-de-serra — zero arquivos externos).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pontuação & Itens</strong></td>
+                        <td>Distância contínua + Moeda Pou (<strong>+15 pts</strong> e +1 moeda na carteira) + Guloseimas (<strong>+50 pts</strong>: Maçã, Cupcake e Hambúrguer).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Perigos do Percurso</strong></td>
+                        <td>Vasos de Cacto (baixo e duplo), Poças de Lama escorregadias e Abelhas Voadoras (exigem abaixar ou salto duplo).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Persistência de Dados</strong></td>
+                        <td>Salvamento automático via <code>localStorage</code> para Recorde, Saldo de Moedas, Itens Comprados e Visual Equipado.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="portal-footer">
+            Pou Runner Web Edition • Jogo Arcade 2D Completo em Arquivo Único HTML5
+        </footer>
+    </main>
+
+    <!-- Modal Lightbox para Ampliar Itens da Galeria -->
+    <div id="lightbox-modal" class="hidden">
+        <div class="lightbox-card">
+            <canvas id="lightbox-canvas" class="lightbox-canvas" width="640" height="400"></canvas>
+            <div class="lightbox-body">
+                <span class="gallery-tag" id="lb-tag">ARTE CONCEITUAL</span>
+                <h3 class="section-title" id="lb-title" style="font-size: 1.4rem;">Título da Arte</h3>
+                <p class="section-desc" id="lb-desc">Descrição detalhada da arte selecionada.</p>
+                <div class="lightbox-footer">
+                    <span style="font-size: 0.82rem; color: #78716c;">Renderizado em Canvas 2D</span>
+                    <button id="btn-close-lb" class="btn-play" style="flex:0; min-width:auto; padding: 8px 22px; font-size: 1rem;">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificação Flutuante (Toast) -->
+    <div id="toast-msg">Item equipado!</div>
+
+    <script>
+        /**
+         * ============================================================================
+         * 1. SISTEMA DE ÁUDIO SINTETIZADO (Web Audio API)
+         * ============================================================================
+         */
+        class SoundManager {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            toggleMute() {
+                this.muted = !this.muted;
+                return this.muted;
+            }
+
+            playJump(isDouble = false) {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(isDouble ? 380 : 250, now);
+                osc.frequency.exponentialRampToValueAtTime(isDouble ? 720 : 520, now + 0.16);
+
+                gain.gain.setValueAtTime(0.22, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.17);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.18);
+            }
+
+            playCoin() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(987.77, now);
+                osc.frequency.setValueAtTime(1318.51, now + 0.07);
+
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.26);
+            }
+
+            playEat() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                [0, 0.09].forEach((offset, idx) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(idx === 0 ? 440 : 587, now + offset);
+                    osc.frequency.exponentialRampToValueAtTime(idx === 0 ? 620 : 880, now + offset + 0.08);
+
+                    gain.gain.setValueAtTime(0.25, now + offset);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.09);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + offset);
+                    osc.stop(now + offset + 0.1);
+                });
+            }
+
+            playBuy() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, i) => {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.06);
+                    gain.gain.setValueAtTime(0.18, now + i * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.06 + 0.18);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now + i * 0.06);
+                    osc.stop(now + i * 0.06 + 0.19);
+                });
+            }
+
+            playShieldBreak() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.12);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.25);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.26);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.27);
+            }
+
+            playHit() {
+                if (this.muted) return;
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(65, now + 0.38);
+
+                gain.gain.setValueAtTime(0.28, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.42);
+            }
+        }
+
+        /**
+         * ============================================================================
+         * 2. CATÁLOGO DA LOJA E ESTADO DE INVENTÁRIO (LocalStorage)
+         * ============================================================================
+         */
+        const SHOP_CATALOG = {
+            HATS: [
+                { id: 'NONE', name: 'Clássico', icon: '😊', price: 0, desc: 'O visual tradicional e simpático do Pou.' },
+                { id: 'CAP', name: 'Boné Vermelho', icon: '🧢', price: 80, desc: 'Estilo esportivo para correr com atitude.' },
+                { id: 'BOW', name: 'Laço Rosa', icon: '🎀', price: 100, desc: 'Um laço fofo e elegante para o passeio.' },
+                { id: 'GLASSES', name: 'Óculos Escuros', icon: '😎', price: 150, desc: 'Proteção contra o sol e muito estilo VIP.' },
+                { id: 'CROWN', name: 'Coroa Real', icon: '👑', price: 300, desc: 'Para o verdadeiro rei das pistas!' }
+            ],
+            SKINS: [
+                { id: 'CLASSIC', name: 'Batata Clássica', icon: '🥔', price: 0, desc: 'Cor marrom clássica do Pou original.', colors: ['#BD8348', '#9E6630', '#7D4E21'] },
+                { id: 'PINK', name: 'Morango Rosa', icon: '🍓', price: 120, desc: 'Doce como sorvete de morango.', colors: ['#F472B6', '#EC4899', '#BE185D'] },
+                { id: 'MINT', name: 'Menta Fresh', icon: '🍃', price: 140, desc: 'Refrescante e vibrante no quintal.', colors: ['#34D399', '#10B981', '#047857'] },
+                { id: 'GOLD', name: 'Dourado VIP', icon: '✨', price: 400, desc: 'Brilho luxuoso de ouro maciço!', colors: ['#FEF08A', '#FACC15', '#B45309'] }
+            ],
+            THEMES: [
+                { id: 'DAY', name: 'Quintal Ensolarado', icon: '☀️', price: 0, desc: 'Céu azul claro e grama verdinha.' },
+                { id: 'SUNSET', name: 'Pôr do Sol na Praia', icon: '🌅', price: 200, desc: 'Entardecer alaranjado com areia dourada.' },
+                { id: 'NIGHT', name: 'Noite Estrelada', icon: '🌙', price: 250, desc: 'Céu noturno mágico com estrelas brilhantes.' }
+            ],
+            POWERUPS: [
+                { id: 'SHIELD', name: 'Escudo de Sabão', icon: '🫧', price: 60, desc: 'Uso único: protege contra 1 batida na próxima corrida!' },
+                { id: 'MAGNET', name: 'Ímã de Comida', icon: '🧲', price: 75, desc: 'Uso único: atrai moedas e lanches na próxima corrida!' }
+            ]
+        };
+
+        // Carrega ou inicializa dados salvos (250 moedas de bônus inicial!)
+        let totalCoins = localStorage.getItem('pouRunnerTotalCoins') !== null
+            ? parseInt(localStorage.getItem('pouRunnerTotalCoins'))
+            : 250;
+        let highScore = parseInt(localStorage.getItem('pouRunnerHighScore')) || 0;
+
+        let inventory = JSON.parse(localStorage.getItem('pouRunnerInventory')) || {
+            ownedHats: ['NONE'],
+            equippedHat: 'NONE',
+            ownedSkins: ['CLASSIC'],
+            equippedSkin: 'CLASSIC',
+            ownedThemes: ['DAY'],
+            equippedTheme: 'DAY',
+            hasShield: false,
+            hasMagnet: false
+        };
+
+        function saveState() {
+            localStorage.setItem('pouRunnerTotalCoins', totalCoins);
+            localStorage.setItem('pouRunnerHighScore', highScore);
+            localStorage.setItem('pouRunnerInventory', JSON.stringify(inventory));
+            updateCoinsUI();
+        }
+
+        function updateCoinsUI() {
+            document.getElementById('nav-coins').textContent = totalCoins;
+            document.getElementById('hud-coins').textContent = totalCoins;
+            document.getElementById('shop-coins').textContent = totalCoins;
+            document.getElementById('hud-high').textContent = highScore;
+
+            const hatObj = SHOP_CATALOG.HATS.find(h => h.id === inventory.equippedHat) || SHOP_CATALOG.HATS[0];
+            document.getElementById('hat-name').textContent = `${hatObj.icon} ${hatObj.name}`;
+
+            const themeObj = SHOP_CATALOG.THEMES.find(t => t.id === inventory.equippedTheme) || SHOP_CATALOG.THEMES[0];
+            document.getElementById('theme-subtitle').textContent = themeObj.name;
+
+            document.getElementById('badge-shield').classList.toggle('hidden', !inventory.hasShield);
+            document.getElementById('badge-magnet').classList.toggle('hidden', !inventory.hasMagnet);
+        }
+
+        let toastTimeout = null;
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 2400);
+        }
+
+        /**
+         * ============================================================================
+         * 3. RENDERIZAÇÃO DA LOJA INTERATIVA
+         * ============================================================================
+         */
+        let currentShopCategory = 'HATS';
+
+        function renderShop() {
+            const grid = document.getElementById('shop-grid');
+            grid.innerHTML = '';
+            const items = SHOP_CATALOG[currentShopCategory];
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'shop-item-card';
+
+                let isOwned = false;
+                let isEquipped = false;
+                let isPowerupActive = false;
+
+                if (currentShopCategory === 'HATS') {
+                    isOwned = inventory.ownedHats.includes(item.id);
+                    isEquipped = inventory.equippedHat === item.id;
+                } else if (currentShopCategory === 'SKINS') {
+                    isOwned = inventory.ownedSkins.includes(item.id);
+                    isEquipped = inventory.equippedSkin === item.id;
+                } else if (currentShopCategory === 'THEMES') {
+                    isOwned = inventory.ownedThemes.includes(item.id);
+                    isEquipped = inventory.equippedTheme === item.id;
+                } else if (currentShopCategory === 'POWERUPS') {
+                    isPowerupActive = (item.id === 'SHIELD' && inventory.hasShield) || (item.id === 'MAGNET' && inventory.hasMagnet);
+                }
+
+                if (isEquipped || isPowerupActive) card.classList.add('equipped');
+                else if (isOwned) card.classList.add('owned');
+
+                // Preview visual personalizado para Skins
+                let circleStyle = '';
+                if (currentShopCategory === 'SKINS' && item.colors) {
+                    circleStyle = `background: radial-gradient(circle at 35% 35%, ${item.colors[0]}, ${item.colors[1]}); border-color: ${item.colors[2]};`;
+                }
+
+                let btnHtml = '';
+                if (currentShopCategory === 'POWERUPS') {
+                    if (isPowerupActive) {
+                        btnHtml = `<button class="btn-shop-action btn-powerup-active" disabled>✅ Pronto p/ Corrida</button>`;
+                    } else {
+                        btnHtml = `<button class="btn-shop-action btn-buy" data-id="${item.id}">🪙 ${item.price}</button>`;
+                    }
+                } else {
+                    if (isEquipped) {
+                        btnHtml = `<button class="btn-shop-action btn-equipped" disabled>✔ Equipado</button>`;
+                    } else if (isOwned) {
+                        btnHtml = `<button class="btn-shop-action btn-equip" data-id="${item.id}">Equipar</button>`;
+                    } else {
+                        btnHtml = `<button class="btn-shop-action btn-buy" data-id="${item.id}">🪙 ${item.price}</button>`;
+                    }
+                }
+
+                card.innerHTML = `
+                    <div class="item-preview-circle" style="${circleStyle}">${item.icon}</div>
+                    <div class="item-title">${item.name}</div>
+                    <div class="item-sub">${item.desc}</div>
+                    ${btnHtml}
+                `;
+
+                const actionBtn = card.querySelector('button:not([disabled])');
+                if (actionBtn) {
+                    actionBtn.addEventListener('click', () => handleShopAction(currentShopCategory, item));
+                }
+
+                grid.appendChild(card);
+            });
+        }
+
+        function handleShopAction(category, item) {
+            sound.init();
+
+            if (category === 'POWERUPS') {
+                if (totalCoins < item.price) {
+                    sound.playHit();
+                    showToast('Moedas insuficientes! Jogue para ganhar mais 🪙');
+                    return;
+                }
+                totalCoins -= item.price;
+                if (item.id === 'SHIELD') inventory.hasShield = true;
+                if (item.id === 'MAGNET') inventory.hasMagnet = true;
+                sound.playBuy();
+                saveState();
+                renderShop();
+                showToast(`${item.icon} ${item.name} ativado para a próxima corrida!`);
+                return;
+            }
+
+            const ownedKey = category === 'HATS' ? 'ownedHats' : category === 'SKINS' ? 'ownedSkins' : 'ownedThemes';
+            const equippedKey = category === 'HATS' ? 'equippedHat' : category === 'SKINS' ? 'equippedSkin' : 'equippedTheme';
+
+            if (inventory[ownedKey].includes(item.id)) {
+                // Equipar
+                inventory[equippedKey] = item.id;
+                sound.playJump(false);
+                saveState();
+                renderShop();
+                if (category === 'THEMES') initEnvironment();
+                pou.scaleX = 1.24;
+                pou.scaleY = 0.78;
+                pou.happyTimer = 0.6;
+                showToast(`${item.icon} ${item.name} equipado!`);
+            } else {
+                // Comprar
+                if (totalCoins < item.price) {
+                    sound.playHit();
+                    showToast('Moedas insuficientes! Colete mais moedas na corrida 🪙');
+                    return;
+                }
+                totalCoins -= item.price;
+                inventory[ownedKey].push(item.id);
+                inventory[equippedKey] = item.id;
+                sound.playBuy();
+                saveState();
+                renderShop();
+                if (category === 'THEMES') initEnvironment();
+                pou.scaleX = 1.28;
+                pou.scaleY = 0.75;
+                pou.happyTimer = 0.8;
+                spawnBurstParticles(pou.x, pou.y - 40, '#FACC15', 16);
+                showToast(`🎉 Você comprou e equipou: ${item.name}!`);
+            }
+        }
+
+        document.querySelectorAll('.shop-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentShopCategory = tab.dataset.cat;
+                renderShop();
+            });
+        });
+
+        /**
+         * ============================================================================
+         * 4. MOTOR DO JOGO (HTML5 CANVAS 2D)
+         * ============================================================================
+         */
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const sound = new SoundManager();
+
+        const badgeScore = document.getElementById('badge-score');
+        const hudScore = document.getElementById('hud-score');
+        const btnSound = document.getElementById('btn-sound');
+        const startScreen = document.getElementById('start-screen');
+        const howtoScreen = document.getElementById('howto-screen');
+        const gameoverScreen = document.getElementById('gameover-screen');
+        const mobileControls = document.getElementById('mobile-controls');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalHighEl = document.getElementById('final-high');
+        const newRecordBadge = document.getElementById('new-record-badge');
+
+        let gameState = 'START';
+        let lastTime = 0;
+        let score = 0;
+        let width = 900;
+        let height = 500;
+        let groundY = 418;
+        let baseSpeed = 420;
+        let currentSpeed = baseSpeed;
+
+        let clouds = [];
+        let stars = [];
+        let hills = [];
+        let flowers = [];
+        let fencePosts = [];
+        let obstacles = [];
+        let collectibles = [];
+        let particles = [];
+        let floatingTexts = [];
+
+        let obstacleTimer = 0;
+        let nextObstacleInterval = 1.4;
+        let collectibleTimer = 0;
+
+        // Personagem Principal: POU
+        const pou = {
+            x: 130,
+            y: 418,
+            baseWidth: 66,
+            baseHeight: 72,
+            vy: 0,
+            gravity: 2100,
+            jumpForce: -760,
+            doubleJumpForce: -680,
+            jumpsRemaining: 2,
+            isGrounded: true,
+            isDucking: false,
+            scaleX: 1,
+            scaleY: 1,
+            rotation: 0,
+            blinkTimer: 0,
+            isBlinking: false,
+            happyTimer: 0,
+            dirty: false,
+            runCycle: 0,
+            invulnTimer: 0,
+
+            reset() {
+                this.y = groundY;
+                this.vy = 0;
+                this.jumpsRemaining = 2;
+                this.isGrounded = true;
+                this.isDucking = false;
+                this.scaleX = 1;
+                this.scaleY = 1;
+                this.rotation = 0;
+                this.happyTimer = 0;
+                this.dirty = false;
+                this.invulnTimer = 0;
+            },
+
+            jump() {
+                if (this.jumpsRemaining > 0) {
+                    const isDouble = this.jumpsRemaining === 1;
+                    this.vy = isDouble ? this.doubleJumpForce : this.jumpForce;
+                    this.isGrounded = false;
+                    this.isDucking = false;
+                    this.jumpsRemaining--;
+                    this.scaleX = 0.76;
+                    this.scaleY = 1.28;
+
+                    if (isDouble) {
+                        this.rotation = 0.01;
+                        spawnBurstParticles(this.x, this.y - 20, '#FFFFFF', 10);
+                    } else {
+                        spawnBurstParticles(this.x, groundY, '#D6C7B2', 8);
+                    }
+                    sound.playJump(isDouble);
+                }
+            },
+
+            setDuck(ducking) {
+                if (this.isDucking === ducking) return;
+                this.isDucking = ducking;
+                if (ducking) {
+                    if (!this.isGrounded) this.vy = Math.max(this.vy, 650);
+                    this.scaleX = 1.32;
+                    this.scaleY = 0.62;
+                } else {
+                    this.scaleX = 0.88;
+                    this.scaleY = 1.12;
+                }
+            },
+
+            update(dt) {
+                if (this.invulnTimer > 0) this.invulnTimer -= dt;
+
+                if (!this.isGrounded) {
+                    this.vy += this.gravity * dt;
+                    this.y += this.vy * dt;
+
+                    if (this.rotation > 0) {
+                        this.rotation += Math.PI * 2 * 2.4 * dt;
+                        if (this.rotation >= Math.PI * 2) this.rotation = 0;
+                    }
+
+                    if (this.y >= groundY) {
+                        this.y = groundY;
+                        this.vy = 0;
+                        this.isGrounded = true;
+                        this.jumpsRemaining = 2;
+                        this.rotation = 0;
+                        this.scaleX = this.isDucking ? 1.35 : 1.28;
+                        this.scaleY = this.isDucking ? 0.6 : 0.74;
+                        spawnBurstParticles(this.x, groundY, '#86EFAC', 6);
+                    }
+                } else {
+                    this.runCycle += dt * (currentSpeed * 0.035);
+                }
+
+                const targetScaleX = this.isDucking ? 1.3 : 1;
+                const targetScaleY = this.isDucking ? 0.62 : 1;
+                this.scaleX += (targetScaleX - this.scaleX) * 14 * dt;
+                this.scaleY += (targetScaleY - this.scaleY) * 14 * dt;
+
+                this.blinkTimer += dt;
+                if (!this.isBlinking && this.blinkTimer > 2.8 + Math.random() * 2) {
+                    this.isBlinking = true;
+                    this.blinkTimer = 0;
+                } else if (this.isBlinking && this.blinkTimer > 0.14) {
+                    this.isBlinking = false;
+                    this.blinkTimer = 0;
+                }
+
+                if (this.happyTimer > 0) this.happyTimer -= dt;
+            },
+
+            getHitbox() {
+                const w = this.baseWidth * this.scaleX * 0.72;
+                const h = this.baseHeight * this.scaleY * 0.78;
+                return {
+                    x: this.x - w / 2,
+                    y: this.y - h - 4,
+                    width: w,
+                    height: h
+                };
+            },
+
+            draw(ctx) {
+                ctx.save();
+                if (this.invulnTimer > 0 && Math.floor(this.invulnTimer * 16) % 2 === 0) {
+                    ctx.globalAlpha = 0.5;
+                }
+
+                const bobOffset = this.isGrounded && !this.isDucking ? Math.abs(Math.sin(this.runCycle)) * -5 : 0;
+                ctx.translate(this.x, this.y + bobOffset);
+
+                // Sombra
+                ctx.save();
+                ctx.translate(0, -bobOffset);
+                const distFromGround = Math.max(0, groundY - this.y);
+                const shadowScale = Math.max(0.35, 1 - distFromGround / 300);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
+                ctx.beginPath();
+                ctx.ellipse(0, 2, (this.baseWidth * 0.52) * shadowScale, 8 * shadowScale, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                if (this.rotation > 0) {
+                    ctx.translate(0, -this.baseHeight * 0.45);
+                    ctx.rotate(this.rotation);
+                    ctx.translate(0, this.baseHeight * 0.45);
+                }
+
+                ctx.scale(this.scaleX, this.scaleY);
+                const w = this.baseWidth;
+                const h = this.baseHeight;
+
+                // Skin / Cor selecionada
+                const skinObj = SHOP_CATALOG.SKINS.find(s => s.id === inventory.equippedSkin) || SHOP_CATALOG.SKINS[0];
+
+                ctx.beginPath();
+                ctx.moveTo(0, -h);
+                ctx.bezierCurveTo(w * 0.42, -h, w * 0.56, -h * 0.35, w * 0.52, -h * 0.12);
+                ctx.bezierCurveTo(w * 0.5, 0, w * 0.25, 0, 0, 0);
+                ctx.bezierCurveTo(-w * 0.25, 0, -w * 0.5, 0, -w * 0.52, -h * 0.12);
+                ctx.bezierCurveTo(-w * 0.56, -h * 0.35, -w * 0.42, -h, 0, -h);
+                ctx.closePath();
+
+                const bodyGrad = ctx.createRadialGradient(-8, -h * 0.6, 5, 0, -h * 0.4, h * 0.8);
+                bodyGrad.addColorStop(0, skinObj.colors[0]);
+                bodyGrad.addColorStop(0.7, skinObj.colors[1]);
+                bodyGrad.addColorStop(1, skinObj.colors[2]);
+                ctx.fillStyle = bodyGrad;
+                ctx.fill();
+
+                ctx.lineWidth = 3.5;
+                ctx.strokeStyle = '#4A2C11';
+                ctx.stroke();
+
+                if (this.dirty) {
+                    ctx.fillStyle = 'rgba(62, 36, 14, 0.75)';
+                    ctx.beginPath();
+                    ctx.arc(-14, -14, 7, 0, Math.PI * 2);
+                    ctx.arc(16, -20, 9, 0, Math.PI * 2);
+                    ctx.arc(4, -54, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Bochechas
+                ctx.fillStyle = 'rgba(244, 114, 182, 0.55)';
+                ctx.beginPath();
+                ctx.ellipse(-18, -h * 0.36, 6, 4, 0, 0, Math.PI * 2);
+                ctx.ellipse(22, -h * 0.36, 6, 4, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Olhos
+                const eyeY = -h * 0.53;
+                const leftEyeX = -7;
+                const rightEyeX = 13;
+                const eyeRadius = 9.5;
+
+                [leftEyeX, rightEyeX].forEach(ex => {
+                    if (this.isBlinking && !this.dirty) {
+                        ctx.beginPath();
+                        ctx.moveTo(ex - eyeRadius + 2, eyeY);
+                        ctx.lineTo(ex + eyeRadius - 2, eyeY);
+                        ctx.lineWidth = 3;
+                        ctx.strokeStyle = '#3E240E';
+                        ctx.stroke();
+                    } else {
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.beginPath();
+                        ctx.arc(ex, eyeY, eyeRadius, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.lineWidth = 2.2;
+                        ctx.strokeStyle = '#3E240E';
+                        ctx.stroke();
+
+                        ctx.fillStyle = '#1C1917';
+                        ctx.beginPath();
+                        ctx.arc(ex + 2.5, eyeY, 4.3, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = '#FFFFFF';
+                        ctx.beginPath();
+                        ctx.arc(ex + 3.8, eyeY - 1.8, 1.7, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                });
+
+                // Acessório / Chapéu Equipado
+                const hatId = inventory.equippedHat;
+                if (hatId === 'CROWN') {
+                    ctx.save();
+                    ctx.translate(0, -h + 2);
+                    ctx.fillStyle = '#FACC15';
+                    ctx.strokeStyle = '#854D0E';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.moveTo(-16, 0);
+                    ctx.lineTo(-19, -18);
+                    ctx.lineTo(-8, -9);
+                    ctx.lineTo(0, -22);
+                    ctx.lineTo(8, -9);
+                    ctx.lineTo(19, -18);
+                    ctx.lineTo(16, 0);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.fillStyle = '#EF4444';
+                    ctx.beginPath();
+                    ctx.arc(0, -6, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                } else if (hatId === 'GLASSES') {
+                    ctx.save();
+                    ctx.fillStyle = '#18181B';
+                    ctx.strokeStyle = '#09090B';
+                    ctx.lineWidth = 2.5;
+                    roundRect(ctx, leftEyeX - 11, eyeY - 8, 22, 15, 4);
+                    ctx.fill(); ctx.stroke();
+                    roundRect(ctx, rightEyeX - 11, eyeY - 8, 22, 15, 4);
+                    ctx.fill(); ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(leftEyeX + 10, eyeY - 3);
+                    ctx.lineTo(rightEyeX - 10, eyeY - 3);
+                    ctx.moveTo(leftEyeX - 11, eyeY - 4);
+                    ctx.lineTo(-28, eyeY - 6);
+                    ctx.stroke();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(leftEyeX - 5, eyeY - 4);
+                    ctx.lineTo(leftEyeX + 1, eyeY + 3);
+                    ctx.moveTo(rightEyeX - 5, eyeY - 4);
+                    ctx.lineTo(rightEyeX + 1, eyeY + 3);
+                    ctx.stroke();
+                    ctx.restore();
+                } else if (hatId === 'CAP') {
+                    ctx.save();
+                    ctx.translate(0, -h + 8);
+                    ctx.fillStyle = '#EF4444';
+                    ctx.strokeStyle = '#7F1D1D';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 21, Math.PI, 0);
+                    ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#DC2626';
+                    ctx.beginPath();
+                    ctx.ellipse(16, 0, 16, 4.5, 0.1, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+                    ctx.restore();
+                } else if (hatId === 'BOW') {
+                    ctx.save();
+                    ctx.translate(-14, -h + 10);
+                    ctx.rotate(-0.35);
+                    ctx.fillStyle = '#F472B6';
+                    ctx.strokeStyle = '#831843';
+                    ctx.lineWidth = 2.2;
+                    ctx.beginPath();
+                    ctx.moveTo(0, 0); ctx.lineTo(-14, -9); ctx.lineTo(-14, 9); ctx.closePath();
+                    ctx.moveTo(0, 0); ctx.lineTo(14, -9); ctx.lineTo(14, 9); ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 4.5, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+                    ctx.restore();
+                }
+
+                // Boca
+                const mouthY = -h * 0.27;
+                if (this.dirty) {
+                    ctx.beginPath();
+                    ctx.arc(3, mouthY + 6, 9, Math.PI * 1.15, Math.PI * 1.85);
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#3E240E';
+                    ctx.stroke();
+                } else if (this.happyTimer > 0) {
+                    ctx.fillStyle = '#E11D48';
+                    ctx.beginPath();
+                    ctx.arc(3, mouthY - 2, 10, 0, Math.PI, false);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.lineWidth = 2.5;
+                    ctx.strokeStyle = '#3E240E';
+                    ctx.stroke();
+                    ctx.fillStyle = '#FB7185';
+                    ctx.beginPath();
+                    ctx.arc(3, mouthY + 4, 5, Math.PI, 0, false);
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(3, mouthY - 3, 10, 0.15 * Math.PI, 0.85 * Math.PI);
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = '#3E240E';
+                    ctx.stroke();
+                }
+
+                // Bolha do Escudo de Sabão Ativo
+                if (inventory.hasShield && !this.dirty) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+                    ctx.fillStyle = 'rgba(186, 230, 253, 0.22)';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(2, -h * 0.48, h * 0.68, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.restore();
+                }
+
+                ctx.restore();
+            }
+        };
+
+        /**
+         * ============================================================================
+         * 5. CENÁRIO EM PARALLAX COM TEMAS DA LOJA (Dia, Pôr do Sol, Noite)
+         * ============================================================================
+         */
+        function initEnvironment() {
+            clouds = [];
+            for (let i = 0; i < 6; i++) {
+                clouds.push({
+                    x: Math.random() * width,
+                    y: 35 + Math.random() * 130,
+                    scale: 0.6 + Math.random() * 0.6,
+                    speedFactor: 0.12 + Math.random() * 0.08
+                });
+            }
+
+            stars = [];
+            for (let i = 0; i < 28; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: 20 + Math.random() * 220,
+                    r: 1.5 + Math.random() * 2.5,
+                    twinkle: Math.random() * 6
+                });
+            }
+
+            hills = [];
+            for (let i = 0; i < 5; i++) {
+                hills.push({
+                    x: i * 260,
+                    radius: 130 + Math.random() * 60,
+                    variant: i % 2
+                });
+            }
+
+            flowers = [];
+            const flowerColors = ['#F43F5E', '#FACC15', '#A855F7', '#FB923C', '#FFFFFF'];
+            for (let i = 0; i < 14; i++) {
+                flowers.push({
+                    x: Math.random() * width,
+                    y: groundY + 14 + Math.random() * 55,
+                    color: flowerColors[i % flowerColors.length],
+                    size: 4 + Math.random() * 3
+                });
+            }
+
+            fencePosts = [];
+            const spacing = 110;
+            const totalPosts = Math.ceil((width + 220) / spacing);
+            for (let i = 0; i < totalPosts; i++) {
+                fencePosts.push({ x: i * spacing });
+            }
+        }
+
+        function updateEnvironment(dt) {
+            const speed = gameState === 'PLAYING' ? currentSpeed : 90;
+
+            clouds.forEach(c => {
+                c.x -= speed * c.speedFactor * dt;
+                if (c.x < -120) {
+                    c.x = width + 100;
+                    c.y = 35 + Math.random() * 130;
+                }
+            });
+
+            stars.forEach(s => {
+                s.twinkle += dt * 3;
+            });
+
+            hills.forEach(h => {
+                h.x -= speed * 0.25 * dt;
+                if (h.x + h.radius < -50) {
+                    h.x = width + h.radius + Math.random() * 80;
+                }
+            });
+
+            fencePosts.forEach(p => {
+                p.x -= speed * 0.65 * dt;
+                if (p.x < -40) {
+                    const maxX = Math.max(...fencePosts.map(fp => fp.x));
+                    p.x = maxX + 110;
+                }
+            });
+
+            flowers.forEach(f => {
+                f.x -= speed * dt;
+                if (f.x < -20) {
+                    f.x = width + 20 + Math.random() * 40;
+                    f.y = groundY + 14 + Math.random() * (height - groundY - 24);
+                }
+            });
+        }
+
+        function drawEnvironment(ctx) {
+            const theme = inventory.equippedTheme || 'DAY';
+
+            // 1. Céu conforme Tema
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, groundY);
+            if (theme === 'SUNSET') {
+                skyGrad.addColorStop(0, '#7C2D12');
+                skyGrad.addColorStop(0.45, '#EA580C');
+                skyGrad.addColorStop(1, '#FDE047');
+            } else if (theme === 'NIGHT') {
+                skyGrad.addColorStop(0, '#0F172A');
+                skyGrad.addColorStop(0.65, '#1E1B4B');
+                skyGrad.addColorStop(1, '#312E81');
+            } else {
+                skyGrad.addColorStop(0, '#38BDF8');
+                skyGrad.addColorStop(0.65, '#BAE6FD');
+                skyGrad.addColorStop(1, '#E0F2FE');
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, width, groundY);
+
+            // Estrelas (Noite)
+            if (theme === 'NIGHT') {
+                stars.forEach(s => {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${0.4 + Math.abs(Math.sin(s.twinkle)) * 0.6})`;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            // Sol ou Lua
+            ctx.save();
+            if (theme === 'NIGHT') {
+                ctx.fillStyle = '#FEF9C3';
+                ctx.beginPath();
+                ctx.arc(width - 90, 75, 30, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#1E1B4B';
+                ctx.beginPath();
+                ctx.arc(width - 78, 68, 25, 0, Math.PI * 2);
+                ctx.fill();
+            } else {
+                ctx.fillStyle = theme === 'SUNSET' ? 'rgba(254, 240, 138, 0.45)' : 'rgba(253, 224, 71, 0.35)';
+                ctx.beginPath();
+                ctx.arc(width - 90, theme === 'SUNSET' ? 140 : 75, 54, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = theme === 'SUNSET' ? '#FEF08A' : '#FACC15';
+                ctx.beginPath();
+                ctx.arc(width - 90, theme === 'SUNSET' ? 140 : 75, 34, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+
+            // 2. Nuvens
+            clouds.forEach(c => {
+                ctx.save();
+                ctx.translate(c.x, c.y);
+                ctx.scale(c.scale, c.scale);
+                ctx.fillStyle = theme === 'NIGHT' ? 'rgba(148, 163, 184, 0.25)' : theme === 'SUNSET' ? 'rgba(254, 215, 170, 0.85)' : 'rgba(255, 255, 255, 0.92)';
+                ctx.beginPath();
+                ctx.arc(0, 0, 26, 0, Math.PI * 2);
+                ctx.arc(24, -8, 32, 0, Math.PI * 2);
+                ctx.arc(52, 0, 24, 0, Math.PI * 2);
+                ctx.arc(26, 10, 26, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            // 3. Colinas
+            hills.forEach(h => {
+                if (theme === 'SUNSET') {
+                    ctx.fillStyle = h.variant === 0 ? '#D97706' : '#B45309';
+                } else if (theme === 'NIGHT') {
+                    ctx.fillStyle = h.variant === 0 ? '#1E293B' : '#0F172A';
+                } else {
+                    ctx.fillStyle = h.variant === 0 ? '#65A30D' : '#4D7C0F';
+                }
+                ctx.beginPath();
+                ctx.arc(h.x, groundY + 25, h.radius, Math.PI, 0);
+                ctx.fill();
+            });
+
+            // Cerca
+            ctx.save();
+            ctx.fillStyle = theme === 'NIGHT' ? '#475569' : '#B47B44';
+            ctx.strokeStyle = theme === 'NIGHT' ? '#1E293B' : '#6B421E';
+            ctx.lineWidth = 2;
+            ctx.fillRect(0, groundY - 34, width, 7);
+            ctx.strokeRect(0, groundY - 34, width, 7);
+            ctx.fillRect(0, groundY - 17, width, 7);
+            ctx.strokeRect(0, groundY - 17, width, 7);
+
+            fencePosts.forEach(p => {
+                ctx.fillStyle = theme === 'NIGHT' ? '#64748B' : '#C68B53';
+                ctx.beginPath();
+                ctx.moveTo(p.x - 7, groundY);
+                ctx.lineTo(p.x - 7, groundY - 42);
+                ctx.lineTo(p.x, groundY - 50);
+                ctx.lineTo(p.x + 7, groundY - 42);
+                ctx.lineTo(p.x + 7, groundY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            });
+            ctx.restore();
+
+            // 4. Solo
+            ctx.fillStyle = theme === 'SUNSET' ? '#92400E' : theme === 'NIGHT' ? '#1E293B' : '#854D0E';
+            ctx.fillRect(0, groundY, width, height - groundY);
+
+            const grassHeight = 22;
+            const grassGrad = ctx.createLinearGradient(0, groundY, 0, groundY + grassHeight);
+            if (theme === 'SUNSET') {
+                grassGrad.addColorStop(0, '#FDE047');
+                grassGrad.addColorStop(1, '#EAB308');
+            } else if (theme === 'NIGHT') {
+                grassGrad.addColorStop(0, '#10B981');
+                grassGrad.addColorStop(1, '#065F46');
+            } else {
+                grassGrad.addColorStop(0, '#4ADE80');
+                grassGrad.addColorStop(1, '#16A34A');
+            }
+            ctx.fillStyle = grassGrad;
+            ctx.fillRect(0, groundY, width, grassHeight);
+
+            ctx.fillStyle = theme === 'SUNSET' ? '#CA8A04' : '#15803D';
+            ctx.fillRect(0, groundY, width, 4);
+
+            flowers.forEach(f => {
+                ctx.fillStyle = '#22C55E';
+                ctx.beginPath();
+                ctx.ellipse(f.x, f.y + 3, f.size * 1.3, f.size * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = f.color;
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        /**
+         * ============================================================================
+         * 6. OBSTÁCULOS E COLETÁVEIS
+         * ============================================================================
+         */
+        function spawnObstacle() {
+            const availableTypes = score < 150 ? ['CACTUS', 'MUD'] : ['CACTUS', 'MUD', 'BEE'];
+            const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+
+            if (type === 'CACTUS') {
+                const isTall = Math.random() > 0.45 && score > 100;
+                obstacles.push({ type: 'CACTUS', x: width + 50, y: groundY, width: 44, height: isTall ? 74 : 54 });
+            } else if (type === 'MUD') {
+                obstacles.push({ type: 'MUD', x: width + 60, y: groundY, width: 74, height: 24 });
+            } else if (type === 'BEE') {
+                obstacles.push({ type: 'BEE', x: width + 50, y: groundY - 56, width: 48, height: 36, wingTimer: 0 });
+            }
+        }
+
+        function updateObstacles(dt) {
+            obstacleTimer += dt;
+            if (obstacleTimer >= nextObstacleInterval) {
+                spawnObstacle();
+                obstacleTimer = 0;
+                const minGap = Math.max(0.85, 1.35 - (currentSpeed - baseSpeed) / 900);
+                nextObstacleInterval = minGap + Math.random() * 0.65;
+            }
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                const obsSpeed = obs.type === 'BEE' ? currentSpeed * 1.15 : currentSpeed;
+                obs.x -= obsSpeed * dt;
+                if (obs.type === 'BEE') obs.wingTimer += dt * 25;
+                if (obs.x + obs.width < -60) obstacles.splice(i, 1);
+            }
+        }
+
+        function drawObstacles(ctx) {
+            obstacles.forEach(obs => {
+                ctx.save();
+                if (obs.type === 'CACTUS') {
+                    const potH = 24;
+                    const cactusH = obs.height - potH;
+                    ctx.fillStyle = '#16A34A';
+                    ctx.strokeStyle = '#14532D';
+                    ctx.lineWidth = 3;
+                    roundRect(ctx, obs.x - 11, obs.y - obs.height, 22, cactusH + 4, 11);
+                    ctx.fill(); ctx.stroke();
+                    roundRect(ctx, obs.x - 22, obs.y - obs.height + 16, 12, 18, 6);
+                    ctx.fill(); ctx.stroke();
+                    roundRect(ctx, obs.x + 10, obs.y - obs.height + 10, 12, 20, 6);
+                    ctx.fill(); ctx.stroke();
+
+                    ctx.fillStyle = '#EA580C';
+                    ctx.strokeStyle = '#7C2D12';
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x - 18, obs.y - potH);
+                    ctx.lineTo(obs.x + 18, obs.y - potH);
+                    ctx.lineTo(obs.x + 14, obs.y);
+                    ctx.lineTo(obs.x - 14, obs.y);
+                    ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+                    roundRect(ctx, obs.x - 20, obs.y - potH - 4, 40, 7, 3);
+                    ctx.fill(); ctx.stroke();
+                } else if (obs.type === 'MUD') {
+                    ctx.fillStyle = '#5C3A18';
+                    ctx.strokeStyle = '#3E240E';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.ellipse(obs.x, obs.y - 4, obs.width / 2, 12, 0, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#784B20';
+                    ctx.beginPath();
+                    ctx.arc(obs.x - 14, obs.y - 8, 6, 0, Math.PI * 2);
+                    ctx.arc(obs.x + 12, obs.y - 7, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (obs.type === 'BEE') {
+                    const floatY = obs.y + Math.sin(obs.wingTimer * 0.3) * 4;
+                    ctx.translate(obs.x, floatY);
+                    const wingOffset = Math.sin(obs.wingTimer) * 5;
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+                    ctx.strokeStyle = '#64748B';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(2, -16 + wingOffset, 10, 13, -0.3, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+
+                    ctx.fillStyle = '#1E293B';
+                    ctx.beginPath();
+                    ctx.moveTo(20, -4); ctx.lineTo(30, 0); ctx.lineTo(20, 4);
+                    ctx.fill();
+
+                    ctx.fillStyle = '#FACC15';
+                    ctx.strokeStyle = '#422006';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 21, 15, 0, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+
+                    ctx.fillStyle = '#1C1917';
+                    ctx.fillRect(-4, -13, 6, 26);
+                    ctx.fillRect(7, -11, 5, 22);
+
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(-11, -3, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.arc(-12.5, -3, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+        }
+
+        function spawnCollectible() {
+            const isFood = Math.random() > 0.55;
+            const heights = [groundY - 35, groundY - 110, groundY - 170];
+            const yPos = heights[Math.floor(Math.random() * heights.length)];
+
+            if (isFood) {
+                const foods = ['APPLE', 'CUPCAKE', 'BURGER'];
+                const foodType = foods[Math.floor(Math.random() * foods.length)];
+                collectibles.push({ kind: 'FOOD', subType: foodType, x: width + 40, y: yPos, radius: 18, bobTimer: Math.random() * 5 });
+            } else {
+                const count = 1 + Math.floor(Math.random() * 3);
+                for (let c = 0; c < count; c++) {
+                    collectibles.push({ kind: 'COIN', x: width + 40 + c * 38, y: yPos, radius: 14, bobTimer: c * 0.5 });
+                }
+            }
+        }
+
+        function updateCollectibles(dt) {
+            collectibleTimer += dt;
+            if (collectibleTimer >= 1.15) {
+                if (Math.random() > 0.25) spawnCollectible();
+                collectibleTimer = 0;
+            }
+
+            for (let i = collectibles.length - 1; i >= 0; i--) {
+                const item = collectibles[i];
+                item.x -= currentSpeed * dt;
+                item.bobTimer += dt * 5;
+
+                // Efeito do Ímã de Comida ativo
+                if (inventory.hasMagnet) {
+                    const dx = pou.x - item.x;
+                    const dy = (pou.y - 32) - item.y;
+                    const dist = Math.hypot(dx, dy);
+                    if (dist < 240 && dist > 1) {
+                        item.x += (dx / dist) * 520 * dt;
+                        item.y += (dy / dist) * 520 * dt;
+                    }
+                }
+
+                if (item.x + item.radius < -40) collectibles.splice(i, 1);
+            }
+        }
+
+        function drawCollectibles(ctx) {
+            collectibles.forEach(item => {
+                const drawY = item.y + Math.sin(item.bobTimer) * 5;
+                ctx.save();
+                ctx.translate(item.x, drawY);
+
+                if (item.kind === 'COIN') {
+                    ctx.fillStyle = '#FACC15';
+                    ctx.strokeStyle = '#B45309';
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, item.radius, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+
+                    ctx.strokeStyle = '#FEF08A';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, item.radius - 4, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#B45309';
+                    ctx.font = 'bold 14px Fredoka, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('P', 0, 1);
+                } else if (item.subType === 'APPLE') {
+                    ctx.fillStyle = '#EF4444';
+                    ctx.strokeStyle = '#7F1D1D';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.arc(0, 2, 14, 0, Math.PI * 2);
+                    ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#22C55E';
+                    ctx.beginPath();
+                    ctx.ellipse(5, -13, 6, 3.5, -0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (item.subType === 'CUPCAKE') {
+                    ctx.fillStyle = '#38BDF8';
+                    ctx.strokeStyle = '#0369A1';
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath();
+                    ctx.moveTo(-12, 0); ctx.lineTo(12, 0); ctx.lineTo(9, 14); ctx.lineTo(-9, 14);
+                    ctx.closePath();
+                    ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = '#F472B6';
+                    ctx.beginPath();
+                    ctx.arc(0, -2, 13, Math.PI, 0);
+                    ctx.fill();
+                    ctx.fillStyle = '#E11D48';
+                    ctx.beginPath();
+                    ctx.arc(0, -15, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (item.subType === 'BURGER') {
+                    ctx.fillStyle = '#F59E0B';
+                    roundRect(ctx, -14, 4, 28, 7, 3); ctx.fill();
+                    ctx.fillStyle = '#78350F';
+                    roundRect(ctx, -15, -1, 30, 6, 3); ctx.fill();
+                    ctx.fillStyle = '#22C55E';
+                    roundRect(ctx, -15, -4, 30, 4, 2); ctx.fill();
+                    ctx.fillStyle = '#F59E0B';
+                    ctx.beginPath();
+                    ctx.arc(0, -4, 14, Math.PI, 0);
+                    ctx.fill();
+                }
+                ctx.restore();
+            });
+        }
+
+        function spawnBurstParticles(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 60 + Math.random() * 160;
+                particles.push({
+                    x, y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed - 40,
+                    size: 4 + Math.random() * 5,
+                    color,
+                    alpha: 1,
+                    life: 0.45 + Math.random() * 0.25
+                });
+            }
+        }
+
+        function spawnFloatingText(x, y, text, color) {
+            floatingTexts.push({ x, y, text, color, life: 0.85 });
+        }
+
+        function updateEffects(dt) {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
+                p.vy += 300 * dt;
+                p.life -= dt;
+                p.alpha = Math.max(0, p.life * 2);
+                if (p.life <= 0) particles.splice(i, 1);
+            }
+
+            for (let i = floatingTexts.length - 1; i >= 0; i--) {
+                const ft = floatingTexts[i];
+                ft.y -= 55 * dt;
+                ft.life -= dt;
+                if (ft.life <= 0) floatingTexts.splice(i, 1);
+            }
+        }
+
+        function drawEffects(ctx) {
+            particles.forEach(p => {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            });
+
+            floatingTexts.forEach(ft => {
+                ctx.save();
+                ctx.globalAlpha = Math.min(1, ft.life * 1.5);
+                ctx.font = 'bold 20px Fredoka, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#3E240E';
+                ctx.strokeText(ft.text, ft.x, ft.y);
+                ctx.fillStyle = ft.color;
+                ctx.fillText(ft.text, ft.x, ft.y);
+                ctx.restore();
+            });
+        }
+
+        function checkCollisions() {
+            const pBox = pou.getHitbox();
+
+            for (let i = collectibles.length - 1; i >= 0; i--) {
+                const item = collectibles[i];
+                const itemBox = { x: item.x - item.radius, y: item.y - item.radius, width: item.radius * 2, height: item.radius * 2 };
+
+                if (rectsIntersect(pBox, itemBox)) {
+                    if (item.kind === 'COIN') {
+                        totalCoins++;
+                        score += 15;
+                        saveState();
+                        sound.playCoin();
+                        spawnBurstParticles(item.x, item.y, '#FACC15', 10);
+                        spawnFloatingText(item.x, item.y - 15, '+15', '#FACC15');
+                    } else {
+                        score += 50;
+                        pou.happyTimer = 0.65;
+                        sound.playEat();
+                        spawnBurstParticles(item.x, item.y, '#F472B6', 14);
+                        spawnFloatingText(item.x, item.y - 15, '+50 NHAC!', '#4ADE80');
+                    }
+                    collectibles.splice(i, 1);
+                }
+            }
+
+            if (pou.invulnTimer > 0) return;
+
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obs = obstacles[i];
+                let oBox;
+                if (obs.type === 'CACTUS') {
+                    oBox = { x: obs.x - 14, y: obs.y - obs.height + 6, width: 28, height: obs.height - 6 };
+                } else if (obs.type === 'MUD') {
+                    oBox = { x: obs.x - obs.width * 0.38, y: obs.y - 12, width: obs.width * 0.76, height: 12 };
+                } else if (obs.type === 'BEE') {
+                    oBox = { x: obs.x - 16, y: obs.y - 11, width: 32, height: 22 };
+                }
+
+                if (rectsIntersect(pBox, oBox)) {
+                    if (inventory.hasShield) {
+                        inventory.hasShield = false;
+                        pou.invulnTimer = 1.2;
+                        obstacles.splice(i, 1);
+                        saveState();
+                        renderShop();
+                        sound.playShieldBreak();
+                        spawnBurstParticles(pou.x, pou.y - 35, '#38BDF8', 22);
+                        spawnFloatingText(pou.x, pou.y - 65, 'ESCUDO SALVOU!', '#38BDF8');
+                        return;
+                    }
+                    triggerGameOver();
+                    return;
+                }
+            }
+        }
+
+        function rectsIntersect(a, b) {
+            return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+        }
+
+        let usedMagnetThisRun = false;
+
+        function startGame() {
+            sound.init();
+            gameState = 'PLAYING';
+            score = 0;
+            currentSpeed = baseSpeed;
+            usedMagnetThisRun = inventory.hasMagnet;
+
+            obstacles = [];
+            collectibles = [];
+            particles = [];
+            floatingTexts = [];
+            obstacleTimer = 0;
+            nextObstacleInterval = 1.2;
+
+            pou.x = Math.min(130, width * 0.18);
+            pou.reset();
+
+            hudScore.textContent = '0';
+            badgeScore.classList.remove('hidden');
+            startScreen.classList.add('hidden');
+            howtoScreen.classList.add('hidden');
+            gameoverScreen.classList.add('hidden');
+            mobileControls.classList.remove('hidden');
+            newRecordBadge.classList.add('hidden');
+        }
+
+        function goToHome() {
+            gameState = 'START';
+            obstacles = [];
+            collectibles = [];
+            particles = [];
+            floatingTexts = [];
+
+            pou.x = width / 2;
+            pou.reset();
+
+            badgeScore.classList.add('hidden');
+            gameoverScreen.classList.add('hidden');
+            howtoScreen.classList.add('hidden');
+            mobileControls.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        function triggerGameOver() {
+            gameState = 'GAMEOVER';
+            pou.dirty = true;
+            sound.playHit();
+            spawnBurstParticles(pou.x, pou.y - 30, '#5C3A18', 22);
+
+            // Consome o Ímã de uso único ao fim da partida
+            if (usedMagnetThisRun) {
+                inventory.hasMagnet = false;
+                usedMagnetThisRun = false;
+                renderShop();
+            }
+
+            const finalScore = Math.floor(score);
+            finalScoreEl.textContent = finalScore;
+
+            if (finalScore > highScore) {
+                highScore = finalScore;
+                newRecordBadge.classList.remove('hidden');
+            }
+
+            saveState();
+            finalHighEl.textContent = highScore;
+            mobileControls.classList.add('hidden');
+
+            setTimeout(() => {
+                if (gameState === 'GAMEOVER') {
+                    gameoverScreen.classList.remove('hidden');
+                }
+            }, 450);
+        }
+
+        function gameLoop(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+            lastTime = timestamp;
+
+            updateEnvironment(dt);
+
+            if (gameState === 'PLAYING') {
+                currentSpeed = Math.min(920, baseSpeed + score * 0.28);
+                score += (currentSpeed * dt) * 0.035;
+                hudScore.textContent = Math.floor(score);
+
+                pou.update(dt);
+                updateObstacles(dt);
+                updateCollectibles(dt);
+                checkCollisions();
+            } else if (gameState === 'START') {
+                pou.x = width / 2;
+                pou.update(dt);
+                if (pou.isGrounded && Math.random() < 0.018) {
+                    pou.vy = -360;
+                    pou.isGrounded = false;
+                    pou.scaleX = 0.85;
+                    pou.scaleY = 1.18;
+                }
+            }
+
+            updateEffects(dt);
+
+            ctx.clearRect(0, 0, width, height);
+            drawEnvironment(ctx);
+            drawCollectibles(ctx);
+            drawObstacles(ctx);
+            pou.draw(ctx);
+            drawEffects(ctx);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function roundRect(ctx, x, y, w, h, r) {
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+        }
+
+        /**
+         * ============================================================================
+         * 7. MÍDIA & GALERIA PROCEDURAL (MINI-CANVASES + LIGHTBOX)
+         * ============================================================================
+         */
+        const GALLERY_ITEMS = [
+            {
+                id: 'ACTION_RUN',
+                tag: 'CAPTURA DE GAMEPLAY',
+                title: 'Corrida Frenética no Quintal',
+                desc: 'Pou saltando sobre cactos espinhosos enquanto coleta moedas douradas e cupcakes sob o sol brilhante.'
+            },
+            {
+                id: 'VIP_ROYAL',
+                tag: 'ARTE DE PERSONAGEM',
+                title: 'Pou Dourado & Coroa Real',
+                desc: 'Combinação lendária disponível na Loja do Pou: skin Dourado VIP acompanhada da Coroa Real cravejada.'
+            },
+            {
+                id: 'NIGHT_CHASE',
+                tag: 'CENÁRIO NOTURNO',
+                title: 'Aventura sob as Estrelas',
+                desc: 'O tema Noite Estrelada transforma o quintal em uma pista iluminada pela lua cheia e estrelas cintilantes.'
+            },
+            {
+                id: 'VILLAINS',
+                tag: 'BESTIÁRIO DO QUINTAL',
+                title: 'Abelhas & Poças de Lama',
+                desc: 'Estudo visual dos principais obstáculos do percurso: abelhas velozes em voo rasante e armadilhas de lama.'
+            }
+        ];
+
+        function drawArtworkOnCanvas(targetCanvas, artId) {
+            const c = targetCanvas.getContext('2d');
+            const w = targetCanvas.width;
+            const h = targetCanvas.height;
+            c.clearRect(0, 0, w, h);
+
+            if (artId === 'ACTION_RUN') {
+                // Céu e grama
+                const g = c.createLinearGradient(0, 0, 0, h);
+                g.addColorStop(0, '#38BDF8');
+                g.addColorStop(0.75, '#BAE6FD');
+                g.addColorStop(0.75, '#4ADE80');
+                g.addColorStop(1, '#16A34A');
+                c.fillStyle = g;
+                c.fillRect(0, 0, w, h);
+
+                // Sol
+                c.fillStyle = '#FACC15';
+                c.beginPath(); c.arc(w - 60, 55, 28, 0, Math.PI * 2); c.fill();
+
+                // Cacto
+                c.fillStyle = '#16A34A'; c.strokeStyle = '#14532D'; c.lineWidth = 3;
+                roundRect(c, w * 0.56, h * 0.52, 22, 55, 10); c.fill(); c.stroke();
+                c.fillStyle = '#EA580C';
+                c.fillRect(w * 0.54, h * 0.68, 32, 22);
+
+                // Pou saltando
+                c.save();
+                c.translate(w * 0.34, h * 0.45);
+                c.rotate(-0.18);
+                c.fillStyle = '#9E6630'; c.strokeStyle = '#4A2C11'; c.lineWidth = 4;
+                c.beginPath(); c.arc(0, 0, 34, 0, Math.PI * 2); c.fill(); c.stroke();
+                c.fillStyle = '#FFF';
+                c.beginPath(); c.arc(-6, -6, 9, 0, Math.PI * 2); c.arc(12, -6, 9, 0, Math.PI * 2); c.fill();
+                c.fillStyle = '#000';
+                c.beginPath(); c.arc(-4, -6, 4, 0, Math.PI * 2); c.arc(14, -6, 4, 0, Math.PI * 2); c.fill();
+                c.restore();
+
+                // Moedas
+                [0.72, 0.82].forEach((rx, idx) => {
+                    c.fillStyle = '#FACC15'; c.strokeStyle = '#B45309'; c.lineWidth = 3;
+                    c.beginPath(); c.arc(w * rx, h * (0.42 - idx * 0.08), 14, 0, Math.PI * 2); c.fill(); c.stroke();
+                });
+
+            } else if (artId === 'VIP_ROYAL') {
+                const g = c.createRadialGradient(w / 2, h / 2, 20, w / 2, h / 2, w * 0.7);
+                g.addColorStop(0, '#FEF08A');
+                g.addColorStop(1, '#D97706');
+                c.fillStyle = g;
+                c.fillRect(0, 0, w, h);
+
+                // Raios
+                c.fillStyle = 'rgba(255,255,255,0.22)';
+                for (let i = 0; i < 12; i++) {
+                    c.save();
+                    c.translate(w / 2, h / 2);
+                    c.rotate((i * Math.PI) / 6);
+                    c.beginPath(); c.moveTo(0, 0); c.lineTo(-18, -w); c.lineTo(18, -w); c.closePath(); c.fill();
+                    c.restore();
+                }
+
+                // Pou Dourado gigante
+                c.save();
+                c.translate(w / 2, h * 0.58);
+                c.fillStyle = '#FACC15'; c.strokeStyle = '#78350F'; c.lineWidth = 5;
+                c.beginPath(); c.arc(0, 0, 48, 0, Math.PI * 2); c.fill(); c.stroke();
+                // Coroa
+                c.fillStyle = '#FEF08A';
+                c.beginPath();
+                c.moveTo(-24, -44); c.lineTo(-28, -70); c.lineTo(-10, -56); c.lineTo(0, -76); c.lineTo(10, -56); c.lineTo(28, -70); c.lineTo(24, -44);
+                c.closePath(); c.fill(); c.stroke();
+                // Olhos
+                c.fillStyle = '#FFF';
+                c.beginPath(); c.arc(-14, -8, 12, 0, Math.PI * 2); c.arc(14, -8, 12, 0, Math.PI * 2); c.fill();
+                c.fillStyle = '#000';
+                c.beginPath(); c.arc(-12, -8, 5, 0, Math.PI * 2); c.arc(16, -8, 5, 0, Math.PI * 2); c.fill();
+                c.restore();
+
+            } else if (artId === 'NIGHT_CHASE') {
+                c.fillStyle = '#0F172A';
+                c.fillRect(0, 0, w, h);
+                c.fillStyle = '#10B981';
+                c.fillRect(0, h * 0.78, w, h * 0.22);
+
+                // Estrelas e Lua
+                c.fillStyle = '#FEF9C3';
+                c.beginPath(); c.arc(w * 0.8, h * 0.24, 24, 0, Math.PI * 2); c.fill();
+                c.fillStyle = '#0F172A';
+                c.beginPath(); c.arc(w * 0.83, h * 0.21, 20, 0, Math.PI * 2); c.fill();
+
+                c.fillStyle = '#FFFFFF';
+                [[0.15, 0.2], [0.3, 0.14], [0.5, 0.25], [0.65, 0.12], [0.22, 0.42]].forEach(([sx, sy]) => {
+                    c.beginPath(); c.arc(w * sx, h * sy, 3, 0, Math.PI * 2); c.fill();
+                });
+
+                // Pou Menta correndo
+                c.save();
+                c.translate(w * 0.42, h * 0.65);
+                c.fillStyle = '#10B981'; c.strokeStyle = '#064E3B'; c.lineWidth = 4;
+                c.beginPath(); c.arc(0, 0, 34, 0, Math.PI * 2); c.fill(); c.stroke();
+                c.fillStyle = '#FFF';
+                c.beginPath(); c.arc(-6, -6, 9, 0, Math.PI * 2); c.arc(12, -6, 9, 0, Math.PI * 2); c.fill();
+                c.fillStyle = '#000';
+                c.beginPath(); c.arc(-4, -6, 4, 0, Math.PI * 2); c.arc(14, -6, 4, 0, Math.PI * 2); c.fill();
+                c.restore();
+
+            } else if (artId === 'VILLAINS') {
+                c.fillStyle = '#FEE2E2';
+                c.fillRect(0, 0, w, h);
+
+                // Abelha gigante
+                c.save();
+                c.translate(w * 0.35, h * 0.45);
+                c.fillStyle = '#FACC15'; c.strokeStyle = '#422006'; c.lineWidth = 4;
+                c.beginPath(); c.ellipse(0, 0, 38, 26, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+                c.fillStyle = '#1C1917';
+                c.fillRect(-6, -24, 10, 48);
+                c.fillRect(12, -20, 9, 40);
+                c.fillStyle = '#FFF';
+                c.beginPath(); c.arc(-18, -5, 8, 0, Math.PI * 2); c.fill();
+                c.fillStyle = '#000';
+                c.beginPath(); c.arc(-20, -5, 4, 0, Math.PI * 2); c.fill();
+                c.restore();
+
+                // Poça de lama
+                c.fillStyle = '#5C3A18'; c.strokeStyle = '#3E240E'; c.lineWidth = 4;
+                c.beginPath(); c.ellipse(w * 0.72, h * 0.68, 45, 18, 0, 0, Math.PI * 2); c.fill(); c.stroke();
+            }
+        }
+
+        function initGallery() {
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+
+            GALLERY_ITEMS.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                card.innerHTML = `
+                    <canvas class="gallery-thumb" width="320" height="200"></canvas>
+                    <div class="gallery-caption">
+                        <span class="gallery-tag">${item.tag}</span>
+                        <span class="gallery-name">${item.title}</span>
+                    </div>
+                `;
+                const thumbCanvas = card.querySelector('canvas');
+                drawArtworkOnCanvas(thumbCanvas, item.id);
+
+                card.addEventListener('click', () => openLightbox(item));
+                grid.appendChild(card);
+            });
+        }
+
+        function openLightbox(item) {
+            const modal = document.getElementById('lightbox-modal');
+            const lbCanvas = document.getElementById('lightbox-canvas');
+            document.getElementById('lb-tag').textContent = item.tag;
+            document.getElementById('lb-title').textContent = item.title;
+            document.getElementById('lb-desc').textContent = item.desc;
+            drawArtworkOnCanvas(lbCanvas, item.id);
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('btn-close-lb').addEventListener('click', () => {
+            document.getElementById('lightbox-modal').classList.add('hidden');
+        });
+
+        document.getElementById('lightbox-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox-modal') {
+                document.getElementById('lightbox-modal').classList.add('hidden');
+            }
+        });
+
+        // Soundboard na Galeria
+        document.querySelectorAll('.btn-sfx').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.dataset.sfx;
+                if (type === 'jump') sound.playJump(false);
+                else if (type === 'double') sound.playJump(true);
+                else if (type === 'coin') sound.playCoin();
+                else if (type === 'eat') sound.playEat();
+                else if (type === 'buy') sound.playBuy();
+                else if (type === 'shield') sound.playShieldBreak();
+                else if (type === 'hit') sound.playHit();
+            });
+        });
+
+        /**
+         * ============================================================================
+         * 8. CONTROLES, REDIMENSIONAMENTO E INICIALIZAÇÃO
+         * ============================================================================
+         */
+        function resizeCanvas() {
+            const wrapper = document.getElementById('game-wrapper');
+            const rect = wrapper.getBoundingClientRect();
+            const dpr = window.devicePixelRatio || 1;
+
+            height = 500;
+            width = Math.max(600, Math.round(height * (rect.width / rect.height)));
+            groundY = height - 82;
+
+            canvas.width = width * dpr;
+            canvas.height = height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            pou.x = gameState === 'START' ? width / 2 : Math.min(130, width * 0.18);
+            if (pou.isGrounded) pou.y = groundY;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        window.addEventListener('keydown', (e) => {
+            if (['Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) {
+                if (gameState === 'PLAYING' || !howtoScreen.classList.contains('hidden')) {
+                    e.preventDefault();
+                }
+            }
+
+            if (!howtoScreen.classList.contains('hidden')) {
+                if (['Escape', 'Enter', 'Space'].includes(e.code)) howtoScreen.classList.add('hidden');
+                return;
+            }
+
+            if (gameState !== 'PLAYING') return;
+
+            if (e.code === 'Space' || e.code === 'ArrowUp' || e.code === 'KeyW') {
+                if (!e.repeat) pou.jump();
+            } else if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+                pou.setDuck(true);
+            }
+        });
+
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowDown' || e.code === 'KeyS') pou.setDuck(false);
+        });
+
+        let touchStartY = 0;
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameState !== 'PLAYING') return;
+            touchStartY = e.touches[0].clientY;
+            pou.jump();
+        }, { passive: false });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (gameState !== 'PLAYING') return;
+            if (e.touches[0].clientY - touchStartY > 35) pou.setDuck(true);
+        }, { passive: false });
+
+        canvas.addEventListener('touchend', () => pou.setDuck(false));
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (e.button === 0 && gameState === 'PLAYING') pou.jump();
+        });
+
+        document.getElementById('btn-ctrl-jump').addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            if (gameState === 'PLAYING') pou.jump();
+        });
+
+        const btnCtrlDuck = document.getElementById('btn-ctrl-duck');
+        btnCtrlDuck.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            if (gameState === 'PLAYING') pou.setDuck(true);
+        });
+        btnCtrlDuck.addEventListener('pointerup', () => pou.setDuck(false));
+        btnCtrlDuck.addEventListener('pointerleave', () => pou.setDuck(false));
+
+        document.getElementById('btn-start').addEventListener('click', startGame);
+        document.getElementById('btn-restart').addEventListener('click', startGame);
+        document.getElementById('btn-home').addEventListener('click', goToHome);
+
+        document.getElementById('btn-howto').addEventListener('click', () => {
+            sound.init();
+            sound.playCoin();
+            howtoScreen.classList.remove('hidden');
+        });
+        document.getElementById('btn-close-howto').addEventListener('click', () => howtoScreen.classList.add('hidden'));
+
+        // Seletor rápido de acessórios já comprados na Tela Inicial
+        function cycleOwnedHat(dir) {
+            sound.init();
+            sound.playJump(false);
+            const owned = inventory.ownedHats;
+            const currentIdx = owned.indexOf(inventory.equippedHat);
+            const nextIdx = (currentIdx + dir + owned.length) % owned.length;
+            inventory.equippedHat = owned[nextIdx];
+            saveState();
+            renderShop();
+            pou.scaleX = 1.25;
+            pou.scaleY = 0.78;
+            pou.happyTimer = 0.5;
+            spawnBurstParticles(pou.x, pou.y - 45, '#FACC15', 10);
+        }
+
+        document.getElementById('btn-hat-prev').addEventListener('click', () => cycleOwnedHat(-1));
+        document.getElementById('btn-hat-next').addEventListener('click', () => cycleOwnedHat(1));
+
+        document.getElementById('pou-pet-zone').addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            if (gameState !== 'START') return;
+            sound.init();
+            pou.vy = -520;
+            pou.isGrounded = false;
+            pou.scaleX = 0.78;
+            pou.scaleY = 1.26;
+            pou.happyTimer = 0.75;
+            sound.playJump(true);
+            spawnBurstParticles(pou.x, pou.y - 25, '#F472B6', 10);
+        });
+
+        btnSound.addEventListener('click', () => {
+            const isMuted = sound.toggleMute();
+            btnSound.textContent = isMuted ? '🔇' : '🔊';
+        });
+
+        window.onload = function () {
+            resizeCanvas();
+            initEnvironment();
+            updateCoinsUI();
+            renderShop();
+            initGallery();
+            goToHome();
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+</html>
